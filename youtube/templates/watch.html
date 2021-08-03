@@ -73,6 +73,7 @@
             max-width: 100%;
             width: {{ theater_video_target_width }}px;
             margin-bottom: 10px;
+            --plyr-video-background: rgba(0, 0, 0, 0);
         }
             #video-container-inner{
                 height: {{ video_height}}px;
@@ -86,6 +87,8 @@
             }
                 video{
                     background-color: var(--video-background-color);
+                }
+                #video-container-inner > video, #video-container-inner > .plyr{
                     position: absolute;
                     top: 0px;
                     left: 0px;
@@ -104,13 +107,15 @@
             grid-column: 2;
         }
         #video-container, #video-container-inner, video{
-            height: 360px;
-            width: 640px;
+            height: 360px !important;
+            width: 640px !important;
         }
         .side-videos{
             grid-row: 1 /span 4;
         }
     {% endif %}
+
+
 
     main{
         display:grid;
@@ -313,6 +318,10 @@
                     grid-row-gap: 10px;
                     padding-top: 10px;
                 }
+            .autoplay-toggle-container{
+                margin-bottom: 10px;
+            }
+
             .related-videos-inner{
                 padding-top: 10px;
                 display: grid;
@@ -407,6 +416,7 @@
                 "v-views                  v-views"
                 "v-likes-dislikes         v-likes-dislikes"
                 "external-player-controls v-checkbox"
+                "v-direct-link            v-direct-link"
                 "v-download               v-download"
                 "v-description            v-description"
                 "v-music-list             v-music-list"
@@ -420,6 +430,15 @@
             }
     }
 {% endblock style %}
+
+{% block head %}
+    {% if settings.video_player == 1 %}
+        <!-- plyr -->
+        <link href="/youtube.com/static/modules/plyr/plyr.css" rel="stylesheet"/>
+        <link href="/youtube.com/static/plyr_fixes.css" rel="stylesheet"/>
+        <!--/ plyr -->
+    {% endif %}
+{% endblock head %}
 
 {% block main %}
     {% if playability_error %}
@@ -445,7 +464,7 @@ Reload without invidious (for usage of new identity button).</a>
             <div id="video-container-inner">
                 <video controls autofocus id="player" class="video video-js" height="{{ video_height }}px">
                     {% for video_source in video_sources %}
-                        <source src="{{ video_source['src'] }}" type="{{ video_source['type'] }}">
+                        <source src="{{ video_source['src'] }}" type="{{ video_source['type'] }}" data-res="{{ video_source['quality'] }}">
                     {% endfor %}
 
                     {% for source in subtitle_sources %}
@@ -466,6 +485,13 @@ Reload without invidious (for usage of new identity button).</a>
             <script>
                 document.querySelector('video').currentTime = {{ time_start|tojson }};
             </script>
+        {% endif %}
+
+        {% if settings.video_player == 1 %}
+            <!-- plyr -->
+            <script src="/youtube.com/static/modules/plyr/plyr.js"></script>
+            <script src="/youtube.com/static/js/plyr-start.js"></script>
+            <!-- /plyr -->
         {% endif %}
     {% endif %}
 
@@ -648,7 +674,7 @@ Reload without invidious (for usage of new identity button).</a>
                 {% endif %}
             </div>
         {% elif settings.related_videos_mode != 0 %}
-            <li>Autoplay: <input type="checkbox" id="autoplay-toggle"></li>
+            <div class="autoplay-toggle-container"><label for="autoplay-toggle">Autoplay: </label><input type="checkbox" id="autoplay-toggle"></div>
         {% endif %}
 
         {% if settings.related_videos_mode != 0 or playlist %}
@@ -799,7 +825,6 @@ Reload without invidious (for usage of new identity button).</a>
         {% endif %}
     {% endif %}
 
-    <script> data = {{ js_data|tojson }} </script>
     <script src="/youtube.com/static/js/common.js"></script>
     <script src="/youtube.com/static/js/transcript-table.js"></script>
     {% if settings.use_video_hotkeys %} <script src="/youtube.com/static/js/hotkeys.js"></script> {% endif %}

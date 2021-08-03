@@ -156,6 +156,17 @@ For security reasons, enabling this is not recommended.''',
         'category': 'interface',
     }),
 
+    ('video_player', {
+        'type': int,
+        'default': 1,
+        'comment': '',
+        'options': [
+            (0, 'Browser Default'),
+            (1, 'Plyr'),
+        ],
+        'category': 'interface',
+    }),
+
     ('proxy_images', {
         'label': 'Route images',
         'type': bool,
@@ -392,7 +403,7 @@ else:
 
 hooks = {}
 def add_setting_changed_hook(setting, func):
-    '''Called right before new settings take effect'''
+    '''Called right after new settings take effect'''
     if setting in hooks:
         hooks[setting].append(func)
     else:
@@ -441,15 +452,21 @@ def settings_page():
             assert SETTINGS_INFO[setting_name]['type'] is bool, missing_inputs
             current_settings_dict[setting_name] = False
 
-        # call setting hooks
+        # find settings that have changed to prepare setting hook calls
+        to_call = []
         for setting_name, value in current_settings_dict.items():
             old_value = globals()[setting_name]
             if value != old_value and setting_name in hooks:
                 for func in hooks[setting_name]:
-                    func(old_value, value)
+                    to_call.append((func, old_value, value))
 
         globals().update(current_settings_dict)
         save_settings(current_settings_dict)
+
+        # call setting hooks
+        for func, old_value, value in to_call:
+            func(old_value, value)
+
         return flask.redirect(util.URL_ORIGIN + '/settings', 303)
     else:
         flask.abort(400)
