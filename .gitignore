@@ -12,3 +12,7 @@ latest-dist.zip
 *.7z
 *.zip
 *venv*
+/youtube/static/video-js/video.min.js
+/youtube/static/video-js/video-js.min.css
+/youtube/static/video-js/silvermine-videojs-quality-selector.min.js
+/youtube/static/video-js/quality-selector.css

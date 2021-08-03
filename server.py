@@ -259,7 +259,7 @@ class FilteredRequestLog:
 def init_js():
     import os
     from youtube.util import download_if_not_exists
-    os.chdir(os.path.dirname(__file__))
+    # os.chdir(os.path.dirname(__file__))
 
     dir = "youtube/static/video-js"
     os.makedirs(dir, exist_ok=True)

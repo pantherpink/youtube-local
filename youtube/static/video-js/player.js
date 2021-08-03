@@ -167,7 +167,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		let label = e.video_quality.match(/\d+x(.*)/)[1].replace(' ', 'p ');  // 640x360 30fps -> 360p 30fps
 		let q = Number.parseInt(label.match(/(\d+)/)[1]);
-		if (q <= 144 || q > window.screen.height) continue;
+		/* if (q <= 144 || q > window.screen.height) continue; */
+		if (q <= 144) continue;
+
 
 		l.push({
 			src: e.url,
