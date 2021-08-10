@@ -1,5 +1,5 @@
 # What is this fork?
-The videojs branch includes the videojs implementation by [zrose584/youtube-local](https://github.com/zrose584/youtube-local) with new commits from master branch of [user234683/youtube-local](https://github.com/user234683/youtube-local).
+The videojs branch includes the videojs implementation by [zrose584/youtube-local](https://github.com/zrose584/youtube-local) with new commits from master branch of [user234683/youtube-local](https://github.com/user234683/youtube-local). Minor small improvements were added by the author of this repository.
 
 ## Installation
 After cloning the repository switch into the videojs branch and run following command to get the needed VideoJS scripts.
