@@ -1,3 +1,13 @@
+# What is this fork?
+The videojs branch includes the videojs implementation by [zrose584/youtube-local](https://github.com/zrose584/youtube-local) with new commits from master branch of [user234683/youtube-local](https://github.com/user234683/youtube-local).
+
+## Installation
+After cloning the repository switch into the videojs branch and run following command to get the needed VideoJS scripts.
+
+```
+python3 server.py init-js
+```
+
 # youtube-local
 
 ![screenshot](https://user-images.githubusercontent.com/28744867/64483429-8a890780-d1b6-11e9-8423-6956ff7c588d.png)
