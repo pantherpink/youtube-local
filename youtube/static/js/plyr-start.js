@@ -17,6 +17,7 @@ const player = new Plyr(document.querySelector('video'), {
         'play',
         'progress',
         'current-time',
+        'duration',
         'mute',
         'volume',
         'captions',
@@ -41,3 +42,8 @@ player.eventListeners.forEach(function(eventListener) {
         eventListener.element.removeEventListener(eventListener.type, eventListener.callback, eventListener.options);
     }
 });
+
+// Add .started property, true after the playback has been started
+// Needed so controls won't be hidden before playback has started
+player.started = false;
+player.once('playing', function(){this.started = true});
