@@ -142,10 +142,56 @@ For security reasons, enabling this is not recommended.''',
         'default': 720,
         'comment': '',
         'options': [
+            (144, '144p'),
+            (240, '240p'),
             (360, '360p'),
+            (480, '480p'),
             (720, '720p'),
+            (1080, '1080p'),
+            (1440, '1440p'),
+            (2160, '2160p'),
         ],
         'category': 'playback',
+    }),
+
+    ('codec_rank_h264', {
+        'type': int,
+        'default': 1,
+        'label': 'H.264 Codec Ranking',
+        'comment': '',
+        'options': [(1, '#1'), (2, '#2'), (3, '#3')],
+        'category': 'playback',
+        'description': (
+            'Which video codecs to prefer. Codecs given the same '
+            'ranking will use smaller file size as a tiebreaker.'
+        )
+    }),
+
+    ('codec_rank_vp', {
+        'type': int,
+        'default': 2,
+        'label': 'VP8/VP9 Codec Ranking',
+        'comment': '',
+        'options': [(1, '#1'), (2, '#2'), (3, '#3')],
+        'category': 'playback',
+    }),
+
+    ('codec_rank_av1', {
+        'type': int,
+        'default': 3,
+        'label': 'AV1 Codec Ranking',
+        'comment': '',
+        'options': [(1, '#1'), (2, '#2'), (3, '#3')],
+        'category': 'playback',
+    }),
+
+    ('prefer_uni_sources', {
+        'label': 'Prefer integrated sources',
+        'type': bool,
+        'default': True,
+        'comment': '',
+        'category': 'playback',
+        'description': 'If enabled and the default resolution is set to 360p or 720p, uses the unified (integrated) video files which contain audio and video, with buffering managed by the browser. If disabled, always uses the separate audio and video files through custom buffer management in av-merge via MediaSource.',
     }),
 
     ('use_video_hotkeys', {
@@ -255,14 +301,16 @@ For security reasons, enabling this is not recommended.''',
 
     ('settings_version', {
         'type': int,
-        'default': 3,
+        'default': 4,
         'comment': '''Do not change, remove, or comment out this value, or else your settings may be lost or corrupted''',
         'hidden': True,
     }),
 ])
 
 program_directory = os.path.dirname(os.path.realpath(__file__))
-acceptable_targets = SETTINGS_INFO.keys() | {'enable_comments', 'enable_related_videos'}
+acceptable_targets = SETTINGS_INFO.keys() | {
+    'enable_comments', 'enable_related_videos', 'preferred_video_codec'
+}
 
 
 def comment_string(comment):
@@ -302,10 +350,26 @@ def upgrade_to_3(settings_dict):
         new_settings['route_tor'] = int(settings_dict['route_tor'])
     new_settings['settings_version'] = 3
     return new_settings
+def upgrade_to_4(settings_dict):
+    new_settings = settings_dict.copy()
+    if 'preferred_video_codec' in settings_dict:
+        pref = settings_dict['preferred_video_codec']
+        if pref == 0:
+            new_settings['codec_rank_h264'] = 1
+            new_settings['codec_rank_vp'] = 2
+            new_settings['codec_rank_av1'] = 3
+        else:
+            new_settings['codec_rank_h264'] = 3
+            new_settings['codec_rank_vp'] = 2
+            new_settings['codec_rank_av1'] = 1
+        del new_settings['preferred_video_codec']
+    new_settings['settings_version'] = 4
+    return new_settings
 
 upgrade_functions = {
     1: upgrade_to_2,
     2: upgrade_to_3,
+    3: upgrade_to_4,
 }
 
 def log_ignored_line(line_number, message):

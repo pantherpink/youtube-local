@@ -54,6 +54,7 @@ The Youtube API is not used, so no keys or anything are needed. It uses the same
 * Optionally skip sponsored segments using [SponsorBlock](https://github.com/ajayyy/SponsorBlock)'s API
 * Custom video speeds
 * Video transcript
+* Supports all available video qualities: 144p through 2160p
 
 ## Planned features
 - [ ] Putting videos from subscriptions or local playlists into the related videos
@@ -62,7 +63,7 @@ The Youtube API is not used, so no keys or anything are needed. It uses the same
 - [ ] Auto-saving of local playlist videos
 - [ ] Import youtube playlist into a local playlist
 - [ ] Rearrange items of local playlist
-- [ ] Video qualities other than 360p and 720p by muxing video and audio
+- [x] Video qualities other than 360p and 720p by muxing video and audio
 - [ ] Corrected .m4a downloads
 - [x] Indicate if comments are disabled
 - [x] Indicate how many comments a video has
@@ -117,6 +118,8 @@ In the settings page, set "Route Tor" to "On, except video" (the second option).
 
 Ensure Tor is listening for Socks5 connections on port 9150. A simple way to accomplish this is by opening the Tor Browser Bundle and leaving it open. However, you will not be accessing the program (at https://localhost:8080) through the Tor Browser. You will use your regular browser for that. Rather, this is just a quick way to give the program access to Tor routing.
 
+### Standalone Tor
+
 If you don't want to waste system resources leaving the Tor Browser open in addition to your regular browser, you can configure standalone Tor to run instead using the following instructions.
 
 For Windows, to make standalone Tor run at startup, press Windows Key + R and type `shell:startup` to open the Startup folder. Create a new shortcut there. For the command of the shortcut, enter `"C:\[path-to-Tor-Browser-directory]\Tor\tor.exe" SOCKSPort 9150 ControlPort 9151`. You can then launch this shortcut to start it. Alternatively, if something isn't working, to see what's wrong, open `cmd.exe` and go to the directory `C:\[path-to-Tor-Browser-directory]\Tor`. Then run `tor SOCKSPort 9150 ControlPort 9151 | more`. The `more` part at the end is just to make sure any errors are displayed, to fix a bug in Windows cmd where tor doesn't display any output. You can stop tor in the task manager.
@@ -136,8 +139,14 @@ In general, Tor video routing will be slower (for instance, moving around in the
 3. Click on "All data included", then on "Deselect all", then select only "subscriptions" and click "OK".
 4. Click on "Next step" and then on "Create export".
 5. Click on the "Download" button after it appears.
-6. From the downloaded takeout zip extract the .json file. It is usually located under `YouTube and YouTube Music/subscriptions/subscriptions.json`
-7. Go to the subscriptions manager in youtube-local. In the import area, select your .json file, then press import.
+6. From the downloaded takeout zip extract the .csv file. It is usually located under `YouTube and YouTube Music/subscriptions/subscriptions.csv`
+7. Go to the subscriptions manager in youtube-local. In the import area, select your .csv file, then press import.
+
+Supported subscriptions import formats:
+- NewPipe subscriptions export JSON
+- Google Takeout CSV
+- Old Google Takeout JSON
+- OPML format from now-removed YouTube subscriptions manager
 
 ## Contributing
 
@@ -155,6 +164,7 @@ Permission is hereby granted to the youtube-dl project at [https://github.com/yt
 
 - Bitcoin: bc1qnxfm8mk2gdcdr56308794a4f97dd7wu6qawguw
 - Monero: 469tczUEVTX6Y7bMEgTyrUJ2K7R8qVNjn5eh5VVHKvi4QsbMD7vrFW8RaCqM1jmZMR9GM87yByvPKZb8gsSxUzrdGCM1yXv
+- Ethereum: 0x04828FFa6fa8F68535A22153300e50AfCDC342C4
 
 ## Similar projects
 - [invidious](https://github.com/iv-org/invidious) Similar to this project, but also allows it to be hosted as a server to serve many users
