@@ -562,6 +562,25 @@ def extract_watch_info(polymer_json):
     info['translation_languages'] = []
     captions_info = player_response.get('captions', {})
     info['_captions_base_url'] = normalize_url(deep_get(captions_info, 'playerCaptionsRenderer', 'baseUrl'))
+    # Sometimes the above playerCaptionsRender is randomly missing
+    # Extract base_url from one of the captions by removing lang specifiers
+    if not info['_captions_base_url']:
+        base_url = normalize_url(deep_get(
+            captions_info,
+            'playerCaptionsTracklistRenderer',
+            'captionTracks',
+            0,
+            'baseUrl'
+        ))
+        if base_url:
+            url_parts = urllib.parse.urlparse(base_url)
+            qs = urllib.parse.parse_qs(url_parts.query)
+            for key in ('tlang', 'lang', 'name', 'kind', 'fmt'):
+                if key in qs:
+                    del qs[key]
+            base_url = urllib.parse.urlunparse(url_parts._replace(
+                query=urllib.parse.urlencode(qs, doseq=True)))
+            info['_captions_base_url'] = base_url
     for caption_track in deep_get(captions_info, 'playerCaptionsTracklistRenderer', 'captionTracks', default=()):
         lang_code = caption_track.get('languageCode')
         if not lang_code:
@@ -730,10 +749,15 @@ def extract_watch_info_from_html(watch_html):
     return extract_watch_info(fake_polymer_json)
 
 
+def captions_available(info):
+    return bool(info['_captions_base_url'])
+
 
 def get_caption_url(info, language, format, automatic=False, translation_language=None):
     '''Gets the url for captions with the given language and format. If automatic is True, get the automatic captions for that language. If translation_language is given, translate the captions from `language` to `translation_language`. If automatic is true and translation_language is given, the automatic captions will be translated.'''
     url = info['_captions_base_url']
+    if not url:
+        return None
     url += '&lang=' + language
     url += '&fmt=' + format
     if automatic:
